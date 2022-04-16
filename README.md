@@ -1,4 +1,7 @@
 # Ansible for deploying Gitbucket application and using apache2 as a LoadBalancer
+
+#### As hosts where we can use all our roles can be only Centos machines
+
 Playbook create database with needed privileges for our application, set up the NFS server for application data, create a loadbalancer using apache2 with needed configuration files, install tomcat, and deploy our application to app servers.
 
 For specify variables when we run our ansible playbook we need to use option __-e (--extra-vars)__
