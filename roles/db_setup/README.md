@@ -1,4 +1,4 @@
-Role Name
+DB setup
 =========
 
 This role is using for configuration our MariaDB server
