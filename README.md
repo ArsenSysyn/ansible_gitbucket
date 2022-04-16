@@ -14,7 +14,7 @@ You can specify as extra vars
 
  
  - IP for giving access to DB (specify this ip without fourth octet):
-      - ip_for_access_db: 10.26
+      - ip_for_access_db: 192.168.33
   
       _P.S. we need it to do like 192.168.33.0/24 in script .sql for giving privileges. It can be use only for network with /24 mask. If we need other mask we need to change template .sql script. Example of 172.16.0.0/16 --> 172.16.%.%_
 
