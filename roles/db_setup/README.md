@@ -1,7 +1,7 @@
 DB setup
 =========
 
-This role is using for configuration our MariaDB server
+This role is using to configure MariaDB server
 
 Requirements
 ------------
