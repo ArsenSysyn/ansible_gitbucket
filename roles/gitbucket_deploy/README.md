@@ -1,38 +1,40 @@
-Role Name
+Gitbucket deploy
 =========
 
-A brief description of the role goes here.
+This role is using to deploy gitbucket application to app servers.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+We need to install one additional plugin for mounting our NFS server to application instance.
+```
+ansible-galaxy collection install ansible.posix
+```
 
 Role Variables
 --------------
-
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+We need to specify these variables
+```
+server_db: "10.26.0.217"
+server_nfs: "10.26.0.214"
+gitbucket_home_dir: /mnt/gitbucket_home
+tomcat_version: 9.0.56
+```
+There are IP's of our NFS and DB servers, application home directory for storing appdata and the version of tomcat that we using.
 
 Dependencies
-------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+----------------
+First of all we need to install tomcat in our app servers so we using another role __tomcat_setup__ that is stored in our repository too.
 
 Example Playbook
 ----------------
+We need to set up first tomcat than deploy application, so we use these roles together.
+```
+  - name: Setup tomcat and deploy application
+    hosts: app_servers
+    become: yes
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+    roles:
+      - tomcat_setup
+      - gitbucket_deploy
+```
