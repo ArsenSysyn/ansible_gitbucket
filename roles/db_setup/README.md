@@ -23,7 +23,7 @@ P.S. we need it to do like 192.168.33.0/24 in script .sql for giving privileges.
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Example of how use our role, in my example I specify variable in vars file, or it can be also specified in group_vars directory. And one more example it specify variable using __- { role: db_setup, ip_for_access_db: 192.168.33 }__
 
     - name: Setup DB server
     hosts: db
