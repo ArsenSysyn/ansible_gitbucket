@@ -12,7 +12,7 @@ ansible-galaxy collection install community.mysql
 Role Variables
 --------------
 
-Specify this ip without fourth octet
+We need to specify this ip without fourth octet
 ```
 ip_for_access_db: 192.168.33
 ```

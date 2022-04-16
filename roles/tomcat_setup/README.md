@@ -10,7 +10,7 @@ Any additional requirements.
 
 Role Variables
 --------------
-Specify only one variable - tomcat version.
+We need to specify only one variable - tomcat version.
 ```
 tomcat_version: 9.0.56
 ```
