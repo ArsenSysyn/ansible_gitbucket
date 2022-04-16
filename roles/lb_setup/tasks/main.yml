@@ -1,0 +1,54 @@
+---
+# tasks file for lb_setup
+- name: Install Apache HTTP Server and policycoreutils-python
+  yum:
+    name:
+      - httpd
+      - policycoreutils-python
+    state: latest
+  #policycoreutils-python is used for semanage(it is used in configure selinux for httpd)
+
+#-----CONFIGURE FIREWALL AND SELINUX FOR HTTPD
+- name: Start and enable firewall
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Configure firewall for Apache LB
+  firewalld:
+    port: 80/tcp
+    zone: public
+    permanent: yes
+    state: enabled
+  register: result
+
+- name: Set httpd_can_network_connect flag on and keep it persistent across reboots
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes
+
+- name: Reload firewall
+  systemd:
+    name: firewalld
+    state: reloaded
+  when: result.changed
+#--------------------------------------
+- name: Start Apache HTTPD
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+
+- name: Configure Load Balancer
+  template:
+    src: httpd.j2
+    dest: /etc/httpd/conf/httpd.conf
+  register: configure
+
+- name: Restart Apache
+  service:
+    name: httpd
+    state: restarted
+  when: configure.changed

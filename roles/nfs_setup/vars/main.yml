@@ -1,0 +1,4 @@
+---
+# vars file for nfs_setup
+ip_network: 10.26.0.0
+mask_network: 22

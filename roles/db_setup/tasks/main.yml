@@ -1,0 +1,55 @@
+---
+# tasks file for db_setup
+- name: Add MariaDB-repo
+  yum_repository:
+    name: mariadb
+    description: mariadb
+    baseurl: http://yum.mariadb.org/10.3/centos7-amd64/
+    gpgkey: https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+    gpgcheck: yes
+
+- name: Install mariadb-server
+  yum:
+    name:
+      - mariadb-server
+      - MariaDB-client
+      - MySQL-python
+    state: latest
+#-----CONFIGURE FIREWALL
+- name: Start and enable firewall
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Configure firewall for DB
+  firewalld:
+    port: 3306/tcp
+    permanent: yes
+    state: enabled
+  register: result1
+
+- name: Reload firewall
+  systemd:
+    name: firewalld
+    state: reloaded
+  when: result1.changed
+#----------------------------------------------
+- name: Start and enable mariadb-server.service
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+
+- name: Generate file for configuring db
+  template:
+    src: createdb.j2
+    dest: /createdb.sql
+
+- name: Create DB and give privileges
+  community.mysql.mysql_db:
+    state: import
+    name: all
+    target: /createdb.sql
+  register: result
+  failed_when: not "'database exists' in result.stderr"

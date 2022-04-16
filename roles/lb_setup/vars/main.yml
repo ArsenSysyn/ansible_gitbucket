@@ -1,0 +1,4 @@
+---
+# vars file for lb_setup
+server_app_1: "10.26.0.157"
+server_app_2: "10.26.0.177"

@@ -1,0 +1,3 @@
+CREATE DATABASE gitbucket;
+GRANT ALL ON gitbucket.* to 'testuser'@'{{ ip_for_access_db }}.%.%' IDENTIFIED BY 'testpassword' WITH GRANT OPTION;
+FLUSH PRIVILEGES;

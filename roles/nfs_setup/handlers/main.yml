@@ -1,0 +1,4 @@
+---
+# handlers file for nfs_setup
+- name: Export the shared directory
+  command: exportfs -ar

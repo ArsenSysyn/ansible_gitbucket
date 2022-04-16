@@ -1,0 +1,30 @@
+---
+
+  - name: Setup NFS server
+    hosts: nfs
+    become: yes
+
+    roles:
+      - nfs_setup
+ 
+  - name: Setup DB server
+    hosts: db
+    become: yes
+
+    roles:
+      - db_setup
+
+  - name: Setup tomcat and deploy application
+    hosts: app_servers
+    become: yes
+
+    roles:
+      - tomcat_setup
+      - gitbucket_deploy
+
+  - name: Setup Apache Load Balancer
+    hosts: lb
+    become: yes
+
+    roles:
+      - lb_setup

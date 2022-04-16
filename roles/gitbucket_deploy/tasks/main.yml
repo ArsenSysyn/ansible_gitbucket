@@ -1,0 +1,79 @@
+---
+# tasks file for gitbucket_deploy
+- name: Install nfs-utils, nfs4-acl-tools
+  yum:
+    name:
+      - nfs-utils
+      - nfs4-acl-tools
+      - unzip
+    state: latest
+
+- name: Create gitbucket home and directory for jgit logs
+  ansible.builtin.file:
+    path: "{{ item }}"
+    recurse: yes
+    owner: tomcat
+    group: tomcat
+  loop: 
+    - "{{ gitbucket_home_dir}}"
+    - /.config/jgit
+
+- name: Mount an NFS volume
+  ansible.posix.mount:
+    src: "{{ server_nfs }}:/mnt/gitbucket_home"
+    path: "{{ gitbucket_home_dir }}"
+    state: mounted
+    fstype: nfs
+
+- name: Configure DB for gitbucket home
+  template:
+    src: database.j2
+    dest: "{{ gitbucket_home_dir }}/database.conf"
+
+- name: Change owner and group of gitbucket_home to tomcat
+  ansible.builtin.file:
+    path: "{{ gitbucket_home_dir }}"
+    recurse: yes
+    owner: tomcat
+    group: tomcat
+
+- name: Set variable GITBUCKET_HOME for tomcat user
+  template:
+    src: setenv.j2
+    dest: "/opt/apache-tomcat-{{ tomcat_version }}/bin/setenv.sh"
+    mode: "711"
+    owner: tomcat
+    group: tomcat
+  register: result
+
+- name: Restart tomcat for setting environment variable GITBUCKET_HOME
+  systemd:
+    name: tomcat
+    state: restarted
+  when: result.changed
+
+- name: Deploy gitbucket to tomcat one time to initiliaze app data
+  get_url:
+    url: https://github.com/gitbucket/gitbucket/releases/download/4.37.2/gitbucket.war
+    owner: tomcat
+    group: tomcat
+    dest: "/opt/apache-tomcat-{{ tomcat_version }}/webapps/gitbucket.war"
+  run_once: true
+  
+- name: Waiting for app wtil be deployed on first host
+  wait_for:
+    path: "/opt/apache-tomcat-{{ tomcat_version }}/logs/catalina.out"
+    search_regex: .* INFO .* Deployment of web application archive \[\/opt\/apache-tomcat-.*webapps\/gitbucket\.war] has finished in .*
+  run_once: true
+  
+- name: Deploy gitbucket to tomcat to other servers
+  get_url:
+    url: https://github.com/gitbucket/gitbucket/releases/download/4.37.2/gitbucket.war
+    owner: tomcat
+    group: tomcat
+    dest: "/opt/apache-tomcat-{{ tomcat_version }}/webapps/gitbucket.war"
+
+- name: Restart
+  service:
+    name: tomcat
+    state: restarted

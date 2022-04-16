@@ -1,0 +1,49 @@
+---
+# tasks file for nfs_setup
+- name: Downloading nfs-utils
+  yum:
+    name: nfs-utils
+    state: latest
+
+#----CONFIGURE FIREWALL----
+- name: Start and enable firewall
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Configure firewall for NFS-server
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    state: enabled
+  loop:
+    - nfs
+    - rpc-bind
+    - mountd
+  register: result
+
+- name: Reload firewall
+  systemd:
+    name: firewalld
+    state: reloaded
+  when: result.changed
+
+#---------------------------
+- name: Starting nfs-server
+  service:
+    name: nfs-server
+    state: started
+    enabled: yes
+
+- name: Making shared directory with gitbucket data
+  file:
+    path: /mnt/gitbucket_home
+    state: directory
+
+- name: Configure /etc/exports file
+  lineinfile:
+    path: /etc/exports
+    line: "/mnt/gitbucket_home {{ ip_network }}/{{ mask_network }}(rw,sync,no_root_squash)"
+    state: present
+  notify: Export the shared directory

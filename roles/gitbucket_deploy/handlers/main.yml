@@ -1,0 +1,6 @@
+---
+# handlers file for gitbucket_deploy
+- name: Restart tomcat
+  service: 
+    name: tomcat
+    state: restarted

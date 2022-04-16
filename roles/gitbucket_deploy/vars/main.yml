@@ -1,0 +1,6 @@
+---
+# vars file for gitbucket_deploy
+server_db: "10.26.0.217"
+server_nfs: "10.26.0.214"
+gitbucket_home_dir: /mnt/gitbucket_home
+tomcat_version: 9.0.56

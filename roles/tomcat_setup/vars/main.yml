@@ -1,0 +1,3 @@
+---
+# vars file for tomcat_setup
+tomcat_version: 9.0.56
