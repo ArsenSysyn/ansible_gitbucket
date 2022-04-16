@@ -15,6 +15,7 @@ Specify this ip without fourth octet
 ```
 ip_for_access_db: 192.168.33
 ```
+
 P.S. we need it to do like 192.168.33.0/24 in script .sql for giving privileges. It can be use only for network with /24 mask. If we need other mask we need to change template .sql script. Example of 172.16.0.0/16 --> 172.16.%.%
 Dependencies
 ------------
